@@ -210,6 +210,16 @@ export const PRODUCTS: Product[] = [
     unit: '180g',
     popular: false
   },
+  {
+    id: 'da_sal_lobos',
+    name: 'Sal Mesa Lobos Bolsa 1 kg',
+    description: 'Sal de mesa fina purificada Lobos, el condimento clásico indispensable en toda cocina para realzar el sabor de tus comidas diarias.',
+    price: 0.95,
+    category: 'Despensa (Abarrotes)',
+    image: 'https://minimarketkarina.cl/wp-content/uploads/2023/10/sal-lobos-bolsa-1-kg.jpeg',
+    unit: '1kg',
+    popular: false
+  },
 
   // 5. Desayuno y Merienda
   {
