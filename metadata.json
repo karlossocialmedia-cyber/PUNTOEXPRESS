@@ -1,0 +1,6 @@
+{
+  "name": "Punto Express",
+  "description": "Tu minimarket de confianza en línea. Explora nuestras categorías de abarrotes, lácteos, carnes, panadería, limpieza y más, agrega productos a tu carrito y envía tu pedido por WhatsApp de forma inmediata.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
