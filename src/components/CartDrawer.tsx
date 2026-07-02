@@ -471,71 +471,73 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                     </div>
                   </div>
+
+                  {/* Summary & WhatsApp CTA Section */}
+                  <div className="space-y-4 pt-2">
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Resumen de Pago</h4>
+                    
+                    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                      {/* Price breakdown */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs text-slate-500">
+                          <span>Subtotal</span>
+                          <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        
+                        {deliveryType === 'domicilio' && (
+                          <div className="flex justify-between text-xs text-slate-500">
+                            <span>Costo de despacho</span>
+                            <span>{deliveryCharge === 0 ? '¡GRATIS!' : `$${deliveryCharge.toFixed(2)}`}</span>
+                          </div>
+                        )}
+
+                        {deliveryType === 'domicilio' && deliveryCharge > 0 && (
+                          <p className="text-[10px] text-red-600 font-bold bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100/55">
+                            💡 ¡Agrega ${(20 - subtotal).toFixed(2)} más en productos para obtener despacho GRATIS!
+                          </p>
+                        )}
+
+                        <div className="flex justify-between items-end pt-2 border-t border-slate-100">
+                          <span className="text-sm font-bold text-slate-800">Total a Pagar</span>
+                          <span className="text-xl font-black text-slate-950">
+                            ${total.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Validation Error Banner */}
+                      {validationError && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-red-50 border border-red-200 text-red-600 text-xs font-bold px-3.5 py-2.5 rounded-xl flex items-center gap-2"
+                        >
+                          <span>⚠️</span>
+                          <span>{validationError}</span>
+                        </motion.div>
+                      )}
+
+                      {/* WhatsApp button */}
+                      <a
+                        id="btn-whatsapp-submit"
+                        href={getWhatsAppLink()}
+                        onClick={handleCheckoutClick}
+                        target="_top"
+                        className="w-full flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] active:scale-98 text-white font-extrabold text-sm py-4 rounded-2xl shadow-md transition-all duration-300"
+                      >
+                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.852.002-2.63-1.023-5.101-2.887-6.963C16.48 1.93 14.015.912 11.397.912 5.961.912 1.537 5.332 1.533 10.765c-.001 1.674.453 3.311 1.311 4.757l-.97 3.543 3.635-.953c1.439.784 2.977 1.196 4.548 1.198zM17.16 14.4c-.284-.141-1.68-.83-1.94-.925-.26-.095-.45-.141-.64.141-.19.283-.735.925-.9 1.114-.166.189-.332.213-.616.072-2.822-1.41-3.905-2.03-5.464-4.704-.156-.268-.156-.431-.012-.575.13-.13.284-.33.427-.496.142-.166.19-.284.284-.473.095-.19.047-.355-.024-.496-.071-.141-.64-1.54-.876-2.11-.23-.554-.464-.48-.64-.489-.166-.008-.356-.01-.546-.01-.19 0-.5.07-.76.355-.26.284-.996.973-.996 2.37s1.019 2.747 1.162 2.937c.142.189 2.004 3.06 4.855 4.285.678.292 1.208.466 1.621.597.681.217 1.3.187 1.79.114.545-.081 1.68-.686 1.917-1.348.237-.662.237-1.23.166-1.348-.07-.118-.26-.189-.544-.33z"/>
+                        </svg>
+                        <span>Enviar Pedido por WhatsApp (+56945485053)</span>
+                      </a>
+                      <p className="text-[10px] text-center text-slate-400 leading-normal">
+                        Se generará tu lista de compras ordenada para enviar directamente a la sucursal de <strong>Punto Express</strong>.
+                      </p>
+                    </div>
+                  </div>
                 </>
               )}
             </div>
-
-            {/* Sticky bottom summary and WhatsApp CTA */}
-            {cart.length > 0 && (
-              <div className="p-6 bg-white border-t border-slate-200 rounded-t-3xl shadow-lg shrink-0">
-                {/* Price breakdown */}
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-xs text-slate-500">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  
-                  {deliveryType === 'domicilio' && (
-                    <div className="flex justify-between text-xs text-slate-500">
-                      <span>Costo de despacho</span>
-                      <span>{deliveryCharge === 0 ? '¡GRATIS!' : `$${deliveryCharge.toFixed(2)}`}</span>
-                    </div>
-                  )}
-
-                  {deliveryType === 'domicilio' && deliveryCharge > 0 && (
-                    <p className="text-[10px] text-red-600 font-bold bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100/55">
-                      💡 ¡Agrega ${(20 - subtotal).toFixed(2)} más en productos para obtener despacho GRATIS!
-                    </p>
-                  )}
-
-                  <div className="flex justify-between items-end pt-2 border-t border-slate-100">
-                    <span className="text-sm font-bold text-slate-800">Total a Pagar</span>
-                    <span className="text-xl font-black text-slate-950">
-                      ${total.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Validation Error Banner */}
-                {validationError && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-3 bg-red-50 border border-red-200 text-red-600 text-xs font-bold px-3.5 py-2.5 rounded-xl flex items-center gap-2"
-                  >
-                    <span>⚠️</span>
-                    <span>{validationError}</span>
-                  </motion.div>
-                )}
-
-                {/* WhatsApp button */}
-                <a
-                  id="btn-whatsapp-submit"
-                  href={getWhatsAppLink()}
-                  onClick={handleCheckoutClick}
-                  target="_top"
-                  className="w-full flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] active:scale-98 text-white font-extrabold text-sm py-4 rounded-2xl shadow-md transition-all duration-300"
-                >
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.852.002-2.63-1.023-5.101-2.887-6.963C16.48 1.93 14.015.912 11.397.912 5.961.912 1.537 5.332 1.533 10.765c-.001 1.674.453 3.311 1.311 4.757l-.97 3.543 3.635-.953c1.439.784 2.977 1.196 4.548 1.198zM17.16 14.4c-.284-.141-1.68-.83-1.94-.925-.26-.095-.45-.141-.64.141-.19.283-.735.925-.9 1.114-.166.189-.332.213-.616.072-2.822-1.41-3.905-2.03-5.464-4.704-.156-.268-.156-.431-.012-.575.13-.13.284-.33.427-.496.142-.166.19-.284.284-.473.095-.19.047-.355-.024-.496-.071-.141-.64-1.54-.876-2.11-.23-.554-.464-.48-.64-.489-.166-.008-.356-.01-.546-.01-.19 0-.5.07-.76.355-.26.284-.996.973-.996 2.37s1.019 2.747 1.162 2.937c.142.189 2.004 3.06 4.855 4.285.678.292 1.208.466 1.621.597.681.217 1.3.187 1.79.114.545-.081 1.68-.686 1.917-1.348.237-.662.237-1.23.166-1.348-.07-.118-.26-.189-.544-.33z"/>
-                  </svg>
-                  <span>Enviar Pedido por WhatsApp (+56945485053)</span>
-                </a>
-                <p className="text-[10px] text-center text-slate-450 mt-2.5 leading-normal">
-                  Se generará tu lista de compras ordenada para enviar directamente a la sucursal de <strong>Punto Express</strong>.
-                </p>
-              </div>
-            )}
           </motion.div>
         </>
       )}
