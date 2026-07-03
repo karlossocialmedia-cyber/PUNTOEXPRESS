@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, Search, Sparkles, AlertCircle, X, ChevronRight, Check, Menu } from 'lucide-react';
 import { Banner } from './components/Banner';
@@ -15,6 +15,66 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  // Monitor and capture standard PWA install prompts
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent browser default prompt
+      e.preventDefault();
+      // Store the event
+      setDeferredPrompt(e);
+      // Show install banner
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // If already in standalone/installed mode, don't show prompt
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setShowInstallBtn(false);
+    }
+
+    // For iOS and mobile web PWA guidelines
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
+    const isDismissed = sessionStorage.getItem('pwa_banner_dismissed') === 'true';
+    
+    // On iOS Safari, beforeinstallprompt isn't supported, but we show how to install
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if ((isMobile || isIOS) && !isInstalled && !isDismissed && !deferredPrompt) {
+      setShowInstallBtn(true);
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, [deferredPrompt]);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User installation decision: ${outcome}`);
+      setDeferredPrompt(null);
+      setShowInstallBtn(false);
+    } else {
+      // Manual/fallback PWA instructions (e.g., iOS Safari)
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isIOS) {
+        triggerToast('📲 Toca "Compartir" (Share) en Safari y selecciona "Agregar a inicio"');
+      } else {
+        triggerToast('📲 Para instalar, ve al menú del navegador y selecciona "Instalar aplicación"');
+      }
+    }
+  };
+
+  const handleDismissBanner = () => {
+    sessionStorage.setItem('pwa_banner_dismissed', 'true');
+    setShowInstallBtn(false);
+  };
 
   // Show a momentary toast notification
   const triggerToast = (message: string) => {
@@ -139,6 +199,48 @@ export default function App() {
         <div className="w-full bg-red-600 text-[10px] text-white py-2.5 px-4 text-center font-mono tracking-widest uppercase shrink-0 flex items-center justify-center gap-2 font-bold shadow-sm">
           <span>⚡ DESPACHO GRATIS EN COMPRAS SOBRE $20 EN PUNTO EXPRESS ⚡</span>
         </div>
+
+        {/* PWA Install Banner */}
+        <AnimatePresence>
+          {showInstallBtn && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="w-full bg-slate-950 text-white text-xs px-4 py-3 flex items-center justify-between border-b border-slate-800 shrink-0 shadow-md overflow-hidden relative z-50"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl animate-bounce">📲</span>
+                <div>
+                  <div className="font-black text-slate-100 flex items-center gap-1.5 text-[11px] sm:text-xs">
+                    <span>Instalar Punto Express</span>
+                    <span className="bg-red-500/10 text-red-400 text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border border-red-500/20">PWA</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium leading-normal mt-0.5">
+                    Descarga nuestra app oficial para comprar más rápido desde tu pantalla de inicio.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  id="btn-pwa-install"
+                  onClick={handleInstallApp}
+                  className="bg-red-600 hover:bg-red-700 active:scale-95 text-white text-[10px] font-black px-3.5 py-2 rounded-xl uppercase tracking-wider shadow-md transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                >
+                  <span>📲 Descargar App</span>
+                </button>
+                <button
+                  id="btn-pwa-dismiss"
+                  onClick={handleDismissBanner}
+                  className="text-slate-400 hover:text-slate-200 p-1.5 rounded-full hover:bg-slate-800 transition-all shrink-0 cursor-pointer"
+                  title="Cerrar"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Top Mobile Menu Toggle Bar */}
         <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white text-slate-900 shrink-0 shadow-sm border-b border-slate-100">
